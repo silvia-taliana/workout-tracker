@@ -1,6 +1,5 @@
 const router = require("express").Router();
 
-// const apiRoutes = require('./api');
 const exerciseRoutes = require('./exerciseRoutes');
 const statsRoutes = require('./statsRoutes');
 const apiRoutes = require('./api/workouts');
