@@ -3,25 +3,21 @@ const { Workout } = require("../../models/Workout.js");
 
 // get all workouts
 router.get("/workouts", (req, res) => {
-    Workout.find({})
-        .then(workouts => {
-            res.json(workouts);
-        })
-        .catch(err => {
-            res.status(400).json(err);
-        });
+    Workout.aggregate([
+        {
+            $sort: { day: -1 }
+        },
+        {
+            $addFields: { totalDuration: { $sum: "$exercises.duration" } }
+        }
+    ]).exec((error, result) => {
+        if (error) {
+            res.json(error);
+            return;
+        }
+        res.json(result);
+    })
 });
-
-// get workout by id 
-// router.get("/workouts/:id", ({ body }, res) => {
-//     Workout.findById({ body })
-//         .then(workouts => {
-//             res.json(workouts);
-//         })
-//         .catch(err => {
-//             res.status(400).json(err);
-//         });
-// });
 
 // create new workout
 router.post("/workouts", ({ body }, res) => {
