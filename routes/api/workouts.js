@@ -5,9 +5,6 @@ const { Workout } = require("../../models/Workout.js");
 router.get("/workouts", (req, res) => {
     Workout.aggregate([
         {
-            $sort: { day: -1 }
-        },
-        {
             $addFields: { totalDuration: { $sum: "$exercises.duration" } }
         }
     ]).exec((error, result) => {
@@ -42,6 +39,30 @@ router.put("/workouts/:id", (req, res) => {
         .catch(err => {
             res.status(400).json(err);
         });
+});
+
+// get workouts in range
+router.get("/workouts/range", (req, res) => {
+    Workout.aggregate([
+        {
+            $sort: { day: -1 }
+        },
+        {
+            $limit: 7
+        },
+        {
+            $sort: { day: 1 }
+        },
+        {
+            $addFields: { totalDuration: { $sum: "$exercises.duration" } }
+        }
+    ]).exec((error, result) => {
+        if (error) {
+            res.json(error);
+            return;
+        }
+        res.json(result);
+    })
 });
 
 module.exports = router;
